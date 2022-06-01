@@ -1,4 +1,6 @@
-
+variable "global_settings" {
+  default = {}
+}
 variable "private_dns_zone_id" {
   type = string
 }

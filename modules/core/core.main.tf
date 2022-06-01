@@ -93,6 +93,7 @@ module "private_dns" {
   for_each            = local.ddi.local_private_dns_zones
   source              = "../../services/networking/private_dns"
   resource_group_name = azurerm_resource_group.rg[each.value.resource_group_key].name
+  global_settings     = var.global_settings
   virtual_network_id  = try(azurerm_virtual_network.vnet[try(each.key, each.value.vnet_key)].id, null)
   private_dns_zones   = each.value.private_dns_zones
   tags                = var.tags

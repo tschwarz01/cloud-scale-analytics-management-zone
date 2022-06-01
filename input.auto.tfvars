@@ -59,7 +59,11 @@ local_private_dns_zones = {
     create_local_private_dns_zones = true
     vnet_key                       = "vnet"
     resource_group_key             = "network"
-    private_dns_zones              = ["privatelink.cognitiveservices.azure.com", "privatelink.mongo.cosmos.azure.com"]
+
+    private_dns_zones = [
+      "privatelink.cognitiveservices.azure.com",
+      "privatelink.mongo.cosmos.azure.com"
+    ]
 
   }
 }
@@ -71,4 +75,7 @@ data_factory_self_hosted_runtime_authorization_script = "https://raw.githubuserc
 vmss_vm_sku                                           = "Standard_D4d_v4"
 vmss_instance_count                                   = 2
 vmss_admin_username                                   = "adminuser"
+
+########################################
+## Diagnostics Settings
 

@@ -10,7 +10,7 @@ terraform {
 resource "azapi_resource" "virtualNetworkLinks" {
   type      = "Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01"
   location  = "global"
-  name      = var.private_dns_zone_name
+  name      = "${var.global_settings.name}-${var.private_dns_zone_name}"
   parent_id = var.private_dns_zone_id
 
   body = jsonencode({

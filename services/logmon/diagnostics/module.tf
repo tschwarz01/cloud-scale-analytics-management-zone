@@ -1,7 +1,7 @@
 resource "azurerm_monitor_diagnostic_setting" "diagnostics" {
   for_each = {
     for key, profile in var.profiles : key => profile
-    if var.diagnostics.diagnostics_definition != {} # Disable diagnostics when not enabled in the launchpad
+    if local.diagnostics_definition != {} # Disable diagnostics when not enabled in the launchpad
   }
   name                           = try(format("%s%s", try("${var.global_settings.name}-", ""), each.value.name), format("%s%s", try("${var.global_settings.name}-", ""), var.diagnostics.diagnostics_definition[each.value.definition_key].name))
   target_resource_id             = var.resource_id

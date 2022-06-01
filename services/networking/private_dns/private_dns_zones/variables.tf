@@ -1,4 +1,6 @@
-
+variable "global_settings" {
+  default = {}
+}
 variable "resource_group_name" {
   type = string
 }
