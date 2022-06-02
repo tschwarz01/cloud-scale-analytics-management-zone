@@ -324,6 +324,33 @@ locals {
         ]
       }
     }
+    azure_sql_database = {
+      name                           = "operational_logs_and_metrics"
+      log_analytics_destination_type = "Dedicated"
+      categories = {
+        log = [
+          # ["Category name",  "Diagnostics Enabled(true/false)", "Retention Enabled(true/false)", Retention_period]
+          ["SQLInsights", true, true, 7],
+          ["AutomaticTuning", true, true, 7],
+          ["QueryStoreRuntimeStatistics", true, true, 7],
+          ["QueryStoreWaitStatistics", true, true, 7],
+          ["Errors", true, true, 7],
+          ["DatabaseWaitStatistics", true, true, 7],
+          ["Timeouts", true, true, 7],
+          ["Blocks", true, true, 7],
+          ["Deadlocks", true, true, 7],
+          ["DevOpsOperationsAudit", true, true, 7],
+          ["SQLSecurityAuditEvents", true, true, 7],
+          ["AzureSiteRecoveryRecoveryPoints", true, true, 7],
+          ["AzureSiteRecoveryReplicationDataUploadRate", true, true, 7],
+          ["AzureSiteRecoveryProtectedDiskDataChurn", true, true, 30],
+        ]
+        metric = [
+          ["InstanceAndAppAdvanced", true, false, 7],
+          ["WorkloadManagement", true, false, 7],
+        ]
+      }
+    }
   }
 
 }

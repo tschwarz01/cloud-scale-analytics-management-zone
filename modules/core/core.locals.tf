@@ -1,4 +1,5 @@
 locals {
+
   resource_groups = {
     network = {
       name     = "network"
@@ -41,6 +42,8 @@ locals {
       location = var.global_settings.location
     }
   }
+
+
   networking = {
     vnets = {
       vnet = {
@@ -52,6 +55,7 @@ locals {
         }
       }
     }
+
     subnets = {
       services = {
         name     = "services"
@@ -80,6 +84,7 @@ locals {
         }
       }
     }
+
     specialsubnets = {
       GatewaySubnet = {
         name     = "GatewaySubnet"
@@ -87,6 +92,7 @@ locals {
         vnet_key = "vnet"
       }
     }
+
     network_security_groups = {
       empty_nsg = {
         version            = 1
@@ -96,7 +102,9 @@ locals {
         nsg                = []
       }
     }
+
     vnet_peerings = {
+
       dmlz_to_hub = {
         name = "dmz_to_connectivity_hub"
         from = {
@@ -110,6 +118,7 @@ locals {
         allow_gateway_transit        = false
         use_remote_gateways          = true
       }
+
       hub_to_dmlz = {
         name = "region1_connectivity_hub_to_dmz"
         from = {
@@ -126,6 +135,7 @@ locals {
     }
   }
   ddi = {
+
     remote_private_dns_zones = {
       for vnet, value in var.module_settings.remote_private_dns_zones : vnet => {
         vnet_key = try(value.vnet_key, null)
@@ -139,6 +149,7 @@ locals {
         }
       } if value.create_vnet_links_to_remote_zones == true
     }
+
     local_private_dns_zones = {
       for vnet, value in var.module_settings.local_private_dns_zones : vnet => {
         vnet_key           = try(value.vnet_key, null)
@@ -154,20 +165,26 @@ locals {
       } if value.create_local_private_dns_zones == true
     }
   }
+
+
   local_pdns = {
     for k, v in module.private_dns["vnet"].private_dns_zones : v.name => v.id
   }
   remote_pdns = {
     for k, v in local.ddi.remote_private_dns_zones["vnet"].private_dns_zones : v.name => v.id
   }
+
+
   diagnostics = {
     diagnostic_log_analytics = try(local.diagnostic_log_analytics, {})
   }
+
   combined_diagnostics = {
     diagnostics_definition   = try(local.diagnostics_definition, {})
     diagnostics_destinations = try(local.diagnostics_destinations, {})
     log_analytics            = try(module.diagnostic_log_analytics, {})
   }
+
   diagnostic_log_analytics = {
     central_logs_region1 = {
       name               = "logs"
@@ -204,6 +221,7 @@ locals {
       }
     }
   }
+
   diagnostics_destinations = {
     # Storage keys must reference the azure region name
     log_analytics = {
@@ -212,6 +230,7 @@ locals {
       }
     }
   }
+
   diagnostics_definition = {
     log_analytics = {
       name = "operational_logs_and_metrics"
@@ -532,6 +551,33 @@ locals {
           ["Autoscale", false],
           ["ResourceHealth", false],
           ["Recommendation", false],
+        ]
+      }
+    }
+    azure_sql_database = {
+      name                           = "operational_logs_and_metrics"
+      log_analytics_destination_type = "Dedicated"
+      categories = {
+        log = [
+          # ["Category name",  "Diagnostics Enabled(true/false)", "Retention Enabled(true/false)", Retention_period]
+          ["SQLInsights", true, true, 7],
+          ["AutomaticTuning", true, true, 7],
+          ["QueryStoreRuntimeStatistics", true, true, 7],
+          ["QueryStoreWaitStatistics", true, true, 7],
+          ["Errors", true, true, 7],
+          ["DatabaseWaitStatistics", true, true, 7],
+          ["Timeouts", true, true, 7],
+          ["Blocks", true, true, 7],
+          ["Deadlocks", true, true, 7],
+          ["DevOpsOperationsAudit", true, true, 7],
+          ["SQLSecurityAuditEvents", true, true, 7],
+          ["AzureSiteRecoveryRecoveryPoints", true, true, 7],
+          ["AzureSiteRecoveryReplicationDataUploadRate", true, true, 7],
+          ["AzureSiteRecoveryProtectedDiskDataChurn", true, true, 30],
+        ]
+        metric = [
+          ["InstanceAndAppAdvanced", true, false, 7],
+          ["WorkloadManagement", true, false, 7],
         ]
       }
     }

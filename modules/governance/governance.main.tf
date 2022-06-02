@@ -10,6 +10,8 @@ resource "azurerm_purview_account" "pva" {
     type = "SystemAssigned"
   }
 }
+
+
 module "keyvault" {
   source                = "../../services/general/keyvault/keyvault"
   for_each              = local.keyvaults
@@ -21,6 +23,8 @@ module "keyvault" {
   combined_objects_core = var.combined_objects_core
   tags                  = try(var.tags, {})
 }
+
+
 module "private_endpoints" {
   source              = "../../services/networking/private_endpoint"
   for_each            = local.private_endpoints
@@ -33,6 +37,8 @@ module "private_endpoints" {
   resource_id         = each.value.resource_id
   subnet_id           = try(each.value.subnet_id, var.combined_objects_core.virtual_subnets["private_endpoints"].id)
 }
+
+
 resource "azurerm_role_assignment" "role_assignment" {
   for_each             = local.role_assignments
   scope                = each.value.scope

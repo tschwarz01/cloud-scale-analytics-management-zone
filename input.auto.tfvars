@@ -42,7 +42,8 @@ remote_private_dns_zones = {
       "privatelink.azurecr.io",
       "privatelink.azuresynapse.net",
       "privatelink.sql.azuresynapse.net",
-      "privatelink.dev.azuresynapse.net"
+      "privatelink.dev.azuresynapse.net",
+      "privatelink.database.windows.net"
     ]
 
   }

@@ -7,6 +7,8 @@ resource "azurerm_shared_image_gallery" "sig" {
   description         = try(each.value.description, null)
   tags                = var.tags
 }
+
+
 resource "azurerm_container_registry" "acr" {
   for_each                      = local.azure_container_registries
   name                          = "${var.global_settings.name_clean}${each.value.name}"
@@ -27,6 +29,8 @@ resource "azurerm_container_registry" "acr" {
     }
   }
 }
+
+
 module "diagnostics" {
   source            = "../../services/logmon/diagnostics"
   for_each          = azurerm_container_registry.acr
@@ -35,12 +39,16 @@ module "diagnostics" {
   diagnostics       = var.combined_objects_core.diagnostics
   profiles          = local.azure_container_registries[each.key].diagnostic_profiles
 }
+
+
 resource "azurerm_synapse_private_link_hub" "plh" {
   for_each            = local.synapse_privatelink_hubs
   name                = "${var.global_settings.name_clean}${each.value.name}"
   resource_group_name = var.combined_objects_core.resource_groups[each.value.resource_group_key].name
   location            = each.value.location
 }
+
+
 module "private_endpoints" {
   depends_on          = [azurerm_container_registry.acr, azurerm_synapse_private_link_hub.plh]
   source              = "../../services/networking/private_endpoint"

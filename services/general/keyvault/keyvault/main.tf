@@ -15,6 +15,7 @@ resource "azurerm_key_vault" "kv" {
 
   dynamic "network_acls" {
     for_each = lookup(var.settings, "network", null) == null ? [] : [1]
+
     content {
       default_action = try(var.settings.network.default_action, "Deny")
       bypass         = var.settings.network.bypass
@@ -24,25 +25,32 @@ resource "azurerm_key_vault" "kv" {
       ]
     }
   }
+
   dynamic "contact" {
     for_each = lookup(var.settings, "contacts", {})
+
     content {
       email = contact.value.email
       name  = try(contact.value.name, null)
       phone = try(contact.value.phone, null)
     }
   }
+
   lifecycle {
     ignore_changes = [
       resource_group_name, location
     ]
   }
+
   timeouts {
     delete = "60m"
   }
 }
+
+
 module "diagnostics" {
-  source            = "../../../logmon/diagnostics"
+  source = "../../../logmon/diagnostics"
+
   resource_id       = azurerm_key_vault.kv.id
   resource_location = azurerm_key_vault.kv.location
   diagnostics       = try(var.combined_objects_core.diagnostics, {})

@@ -1,6 +1,7 @@
 module "keyvault" {
-  source                = "../../services/general/keyvault/keyvault"
-  for_each              = local.keyvaults
+  source   = "../../services/general/keyvault/keyvault"
+  for_each = local.keyvaults
+
   name                  = "${var.global_settings.name}-${each.value.name}"
   global_settings       = var.global_settings
   settings              = each.value
@@ -9,16 +10,22 @@ module "keyvault" {
   tags                  = var.tags
   combined_objects_core = var.combined_objects_core
 }
+
+
 resource "azurerm_role_assignment" "role_assignment" {
-  depends_on           = [module.keyvault]
-  for_each             = local.role_assignments
+  depends_on = [module.keyvault]
+  for_each   = local.role_assignments
+
   scope                = each.value.scope
   role_definition_name = each.value.role_definition_name
   principal_id         = each.value.principal_id
 }
+
+
 module "data_factory" {
-  source                = "../../services/general/data_factory/data_factory"
-  for_each              = local.data_factory
+  source   = "../../services/general/data_factory/data_factory"
+  for_each = local.data_factory
+
   name                  = "${var.global_settings.name}-${each.value.name}"
   global_settings       = var.global_settings
   settings              = each.value
@@ -27,14 +34,20 @@ module "data_factory" {
   tags                  = var.tags
   combined_objects_core = var.combined_objects_core
 }
+
+
 resource "time_sleep" "shirdelay" {
-  depends_on      = [azurerm_role_assignment.role_assignment]
+  depends_on = [azurerm_role_assignment.role_assignment]
+
   create_duration = "25s"
 }
+
+
 module "vmss_self_hosted_integration_runtime" {
-  depends_on             = [time_sleep.shirdelay]
-  source                 = "../../services/general/data_factory/vmss_shir"
-  for_each               = try(local.vmss_self_hosted_integration_runtime, {})
+  depends_on = [time_sleep.shirdelay]
+  source     = "../../services/general/data_factory/vmss_shir"
+  for_each   = try(local.vmss_self_hosted_integration_runtime, {})
+
   global_settings        = var.global_settings
   resource_group_name    = var.combined_objects_core.resource_groups[each.value.resource_group_key].name
   location               = var.global_settings.location

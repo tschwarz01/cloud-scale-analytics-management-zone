@@ -18,6 +18,7 @@ module "azuread_apps" {
   )
 }
 
+
 module "azuread_service_principals" {
   source = "./access_policy"
   for_each = {
@@ -32,7 +33,6 @@ module "azuread_service_principals" {
 
   access_policy = each.value
   tenant_id     = var.resources.azuread_service_principals[each.value.azuread_service_principal_key].tenant_id
-
   object_id = coalesce(
     try(var.resources.azuread_service_principals[each.value.azuread_service_principal_key].object_id, null)
   )

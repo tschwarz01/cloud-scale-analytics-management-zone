@@ -1,3 +1,4 @@
+
 resource "azurerm_public_ip" "pip" {
   name                    = "${var.global_settings.name}-${var.settings.vmss_settings.windows.name}-pip"
   resource_group_name     = var.resource_group_name
@@ -8,6 +9,8 @@ resource "azurerm_public_ip" "pip" {
   idle_timeout_in_minutes = 4
   tags                    = var.tags
 }
+
+
 resource "azurerm_lb" "lb" {
   name                = "${var.global_settings.name}-${var.settings.vmss_settings.windows.name}-lb"
   location            = var.location
@@ -20,22 +23,25 @@ resource "azurerm_lb" "lb" {
     #subnet_id = var.combined_objects_core.virtual_subnets[var.settings.subnet_key].id
   }
 }
+
+
 resource "azurerm_lb_backend_address_pool" "backend_address_pool" {
   loadbalancer_id = azurerm_lb.lb.id
   name            = "${var.settings.vmss_settings.windows.name}-backend-pool"
 }
+
+
 resource "azurerm_lb_probe" "lb_probe" {
-  depends_on = [
-    azurerm_lb_backend_address_pool.backend_address_pool, azurerm_lb.lb
-  ]
+  depends_on      = [azurerm_lb_backend_address_pool.backend_address_pool, azurerm_lb.lb]
   loadbalancer_id = azurerm_lb.lb.id
   name            = "${var.global_settings.name}-${var.settings.vmss_settings.windows.name}-probe"
   port            = 3389
 }
+
+
 resource "azurerm_lb_rule" "lb_rule" {
-  depends_on = [
-    azurerm_lb_backend_address_pool.backend_address_pool, azurerm_lb_probe.lb_probe
-  ]
+  depends_on = [azurerm_lb_backend_address_pool.backend_address_pool, azurerm_lb_probe.lb_probe]
+
   loadbalancer_id                = azurerm_lb.lb.id
   name                           = "rule1"
   protocol                       = "Tcp"

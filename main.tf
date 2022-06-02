@@ -28,17 +28,16 @@ provider "azurerm" {
 data "azurerm_client_config" "default" {}
 data "azuread_client_config" "current" {}
 
+
+
 module "core" {
   source          = "./modules/core"
   global_settings = local.global_settings
   module_settings = local.core_module_settings
   tags            = local.global_settings.tags
-  # diagnostics = {
-  #   diagnostic_log_analytics = var.diagnostic_log_analytics
-  #   diagnostics_destinations = var.diagnostics_destinations
-  #   diagnostics_definition   = local.diagnostics_definition
-  # }
 }
+
+
 module "consumption" {
   source                = "./modules/consumption"
   global_settings       = local.global_settings
@@ -46,6 +45,8 @@ module "consumption" {
   combined_objects_core = local.combined_objects_core
   tags                  = local.global_settings.tags
 }
+
+
 module "governance" {
   source                = "./modules/governance"
   global_settings       = local.global_settings
@@ -53,10 +54,16 @@ module "governance" {
   combined_objects_core = local.combined_objects_core
   tags                  = local.global_settings.tags
 }
+
+
 module "integration" {
   source                = "./modules/integration"
   global_settings       = local.global_settings
   module_settings       = local.integration_module_settings
   combined_objects_core = local.combined_objects_core
   tags                  = local.global_settings.tags
+}
+
+output "purview" {
+  value = module.governance.purview_accounts
 }
