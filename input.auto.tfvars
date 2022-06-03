@@ -43,7 +43,12 @@ remote_private_dns_zones = {
       "privatelink.azuresynapse.net",
       "privatelink.sql.azuresynapse.net",
       "privatelink.dev.azuresynapse.net",
-      "privatelink.database.windows.net"
+      "privatelink.database.windows.net",
+      "privatelink.search.windows.net",
+      "privatelink.cognitiveservices.azure.com",
+      "privatelink.api.azureml.ms",
+      "privatelink.file.core.windows.net",
+      "privatelink.notebooks.azure.net"
     ]
 
   }
@@ -62,7 +67,6 @@ local_private_dns_zones = {
     resource_group_key             = "network"
 
     private_dns_zones = [
-      "privatelink.cognitiveservices.azure.com",
       "privatelink.mongo.cosmos.azure.com"
     ]
 
