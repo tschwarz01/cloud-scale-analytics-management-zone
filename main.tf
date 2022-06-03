@@ -27,7 +27,7 @@ provider "azurerm" {
 }
 data "azurerm_client_config" "default" {}
 data "azuread_client_config" "current" {}
-
+data "azurerm_subscription" "current" {}
 
 
 module "core" {
@@ -62,8 +62,4 @@ module "integration" {
   module_settings       = local.integration_module_settings
   combined_objects_core = local.combined_objects_core
   tags                  = local.global_settings.tags
-}
-
-output "purview" {
-  value = module.governance.purview_accounts
 }

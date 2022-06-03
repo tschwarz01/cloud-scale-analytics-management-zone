@@ -186,3 +186,17 @@ module "diagnostic_log_analytics_diagnostics" {
   profiles          = try(each.value.diagnostic_profiles, {})
 }
 
+
+module "subscription_diagnostics" {
+  source            = "../../services/logmon/diagnostics"
+  resource_id       = var.global_settings.client_config.subscription_id
+  resource_location = var.global_settings.location
+  diagnostics       = local.combined_diagnostics
+  profiles = {
+    subscription_diag = {
+      definition_key   = "subscription_operations"
+      destination_type = "log_analytics"
+      destination_key  = "central_logs"
+    }
+  }
+}
