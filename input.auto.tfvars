@@ -1,26 +1,46 @@
 #########################################
-## General Settings
-
+##          General Settings
+#########################################
 location    = "southcentralus"
 environment = "dev"
 tags = {
   Org = "Cloud Ops"
 }
 
-#########################################
-## Core Network Settings
 
-vnet_address_cidr                   = "10.11.0.0/21"
-services_subnet_cidr                = "10.11.0.0/24"
-private_endpoint_subnet_cidr        = "10.11.1.0/24"
-gateway_subnet_cidr                 = "10.11.2.0/26"
-data_gateway_subnet_cidr            = "10.11.2.128/25"
+#########################################
+##    Management Zone Feature Flags
+#########################################
+
+deploy_azure_firewall = false
+
+
+
+
+
+
+#########################################
+##        Core Network Settings
+#########################################
+
+vnet_address_cidr = "10.11.0.0/21"
+
+## Required Subnets
+services_subnet_cidr         = "10.11.0.0/24"
+private_endpoint_subnet_cidr = "10.11.1.0/24"
+data_gateway_subnet_cidr     = "10.11.2.128/25"
+
+## if deploy_zure_firewall = true
+firewall_subnet_cidr = "10.11.2.64/26"
+#gateway_subnet_cidr  = "10.11.2.0/26"
+
+
 connectivity_hub_virtual_network_id = "/subscriptions/893395a4-65a3-4525-99ea-2378c6e0dbed/resourceGroups/rg-network_connectivity_hub/providers/Microsoft.Network/virtualNetworks/vnet-connectivity_hub"
 
-###########################################
-## Private DNS Zone Settings - 
-## Remote Subscription Hosted Zones
-
+#########################################
+##      Private DNS Zone Settings - 
+##    Remote Subscription Hosted Zones
+#########################################
 remote_private_dns_zones = {
   vnet = {
 
@@ -55,9 +75,9 @@ remote_private_dns_zones = {
 }
 
 #######################################
-## Private DNS Zones Settings - 
+##     Private DNS Zones Settings - 
 ## Zones to Create in the Data Management Zone
-
+#########################################
 local_private_dns_zones = {
 
   vnet = {
@@ -73,14 +93,14 @@ local_private_dns_zones = {
   }
 }
 
-########################################
-# Integration Module Settings
-
+#########################################
+#     Integration Module Settings
+#########################################
 data_factory_self_hosted_runtime_authorization_script = "https://raw.githubusercontent.com/Azure/data-landing-zone/main/code/installSHIRGateway.ps1"
 vmss_vm_sku                                           = "Standard_D4d_v4"
 vmss_instance_count                                   = 2
 vmss_admin_username                                   = "adminuser"
 
-########################################
-## Diagnostics Settings
-
+#########################################
+##         Diagnostics Settings
+#########################################

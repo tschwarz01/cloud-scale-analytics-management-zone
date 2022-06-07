@@ -27,6 +27,12 @@ locals {
     Project  = "Data Management Landing Zone"
     Toolkit  = "Terraform"
   }
+
+
+  #########################################
+  ##          Module Settings
+  #########################################
+
   core_module_settings = {
     connectivity_hub_virtual_network_id   = var.connectivity_hub_virtual_network_id
     vnet_address_cidr                     = var.vnet_address_cidr
@@ -39,14 +45,25 @@ locals {
     remote_private_dns_zones              = try(var.remote_private_dns_zones, null)
     local_private_dns_zones               = try(var.local_private_dns_zones, null)
   }
-  consumption_module_settings = {}
-  governance_module_settings  = {}
+
+
   integration_module_settings = {
     data_factory_self_hosted_runtime_authorization_script = try(var.data_factory_self_hosted_runtime_authorization_script, null)
     vmss_instance_count                                   = try(var.vmss_instance_count, 2)
     vmss_vm_sku                                           = try(var.vmss_vm_sku, null)
     vmss_admin_username                                   = try(var.vmss_admin_username, "adminuser")
   }
+
+
+  consumption_module_settings = {}
+  governance_module_settings  = {}
+
+
+
+  #########################################
+  ##      Derived Settings / Variables
+  #########################################
+
   combined_objects_core = {
     resource_groups   = merge(module.core.resource_groups, {})
     virtual_networks  = merge(module.core.virtual_networks, {})
@@ -54,12 +71,16 @@ locals {
     private_dns_zones = merge(module.core.local_pdns, module.core.remote_pdns, {})
     diagnostics       = module.core.diagnostics
   }
+
+
   combined_objects_consumption = {
     shared_image_galleries   = merge(module.consumption.shared_image_galleries, {})
     container_registries     = merge(module.consumption.container_registries, {})
     synapse_privatelink_hubs = merge(module.consumption.synapse_privatelink_hubs, {})
     private_endpoints        = merge(module.consumption.private_endpoints, {})
   }
+
+
   combined_objects_governance = {
     purview_accounts  = merge(module.governance.purview_accounts, {})
     private_endpoints = merge(module.governance.private_endpoints, {})
