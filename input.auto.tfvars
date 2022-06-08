@@ -68,7 +68,8 @@ remote_private_dns_zones = {
       "privatelink.cognitiveservices.azure.com",
       "privatelink.api.azureml.ms",
       "privatelink.file.core.windows.net",
-      "privatelink.notebooks.azure.net"
+      "privatelink.notebooks.azure.net",
+      "privatelink.documents.azure.com"
     ]
 
   }
@@ -102,5 +103,6 @@ vmss_instance_count                                   = 2
 vmss_admin_username                                   = "adminuser"
 
 #########################################
-##         Diagnostics Settings
+##         Automation Settings
 #########################################
+cosmosdb_use_free_tier = false #true

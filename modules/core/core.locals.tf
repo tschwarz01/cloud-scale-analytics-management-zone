@@ -41,6 +41,10 @@ locals {
       name     = "shared-services"
       location = var.global_settings.location
     }
+    automation = {
+      name     = "automation"
+      location = var.global_settings.location
+    }
   }
 
 
