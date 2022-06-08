@@ -66,6 +66,9 @@ locals {
     vmss_admin_username                                   = try(var.vmss_admin_username, "adminuser")
   }
 
+  automation_module_settings = {
+    enable_free_tier = var.cosmosdb_use_free_tier
+  }
 
   consumption_module_settings = {}
   governance_module_settings  = {}

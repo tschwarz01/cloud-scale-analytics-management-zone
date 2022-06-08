@@ -64,6 +64,7 @@ module "integration" {
   tags                  = local.global_settings.tags
 }
 
+
 module "automation" {
   source                = "./modules/automation"
   global_settings       = local.global_settings

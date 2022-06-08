@@ -118,3 +118,9 @@ variable "vmss_admin_username" {
   description = "The Windows admin username that will be used by the VMSS instances."
   default     = "adminuser"
 }
+
+variable "cosmosdb_use_free_tier" {
+  type        = bool
+  description = "The offer_type of the CosmosDB account."
+  default     = false
+}
