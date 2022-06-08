@@ -63,3 +63,4 @@ module "integration" {
   combined_objects_core = local.combined_objects_core
   tags                  = local.global_settings.tags
 }
+

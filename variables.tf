@@ -56,10 +56,10 @@ variable "firewall_subnet_cidr" {
   description = "Address space to use for the Azure Firewall subnet within the Management Zone virtual network."
 }
 
-# variable "gateway_subnet_cidr" {
-#   type        = string
-#   description = "Address space to use for the Virtual Network Gateway subnet within the Management Zone VNet"
-# }
+variable "gateway_subnet_cidr" {
+  type        = string
+  description = "Address space to use for the Virtual Network Gateway subnet within the Management Zone VNet"
+}
 variable "private_dns_zones_subscription_id" {
   type        = string
   description = "The id of the subscription where remote Private DNS Zones are deployed."
@@ -92,6 +92,13 @@ variable "local_private_dns_zones" {
     private_dns_zones              = list(string)
   }))
 }
+
+variable "deploy_dmlz_shared_integration_runtime" {
+  type        = bool
+  description = "Feature flag which determines if shared Data Factory Integration Runtime compute resources will be managed in the Data Management Zone subscription."
+  default     = true
+}
+
 variable "data_factory_self_hosted_runtime_authorization_script" {
   type        = string
   description = "The URI of the script which will be executed to register Virtual Machines with an Azure Data Factory Self-Hosted Integration Runtime."

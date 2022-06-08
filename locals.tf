@@ -3,7 +3,7 @@ resource "random_string" "prefix" {
   length  = 4
   special = false
   upper   = false
-  number  = false
+  numeric = false
 }
 locals {
   global_settings = {
@@ -34,20 +34,32 @@ locals {
   #########################################
 
   core_module_settings = {
-    connectivity_hub_virtual_network_id   = var.connectivity_hub_virtual_network_id
-    vnet_address_cidr                     = var.vnet_address_cidr
-    services_subnet_cidr                  = var.services_subnet_cidr
-    private_endpoint_subnet_cidr          = var.private_endpoint_subnet_cidr
-    gateway_subnet_cidr                   = var.gateway_subnet_cidr
-    data_gateway_subnet_cidr              = var.data_gateway_subnet_cidr
+
+    // Connectivity Hub peering
+    connectivity_hub_virtual_network_id = var.connectivity_hub_virtual_network_id
+
+    // Management Zone virtual network
+    vnet_address_cidr            = var.vnet_address_cidr
+    services_subnet_cidr         = var.services_subnet_cidr
+    private_endpoint_subnet_cidr = var.private_endpoint_subnet_cidr
+    data_gateway_subnet_cidr     = var.data_gateway_subnet_cidr
+
+    // DNS
     private_dns_zones_subscription_id     = try(var.private_dns_zones_subscription_id, null)
     private_dns_zones_resource_group_name = try(var.private_dns_zones_resource_group_name, null)
     remote_private_dns_zones              = try(var.remote_private_dns_zones, null)
     local_private_dns_zones               = try(var.local_private_dns_zones, null)
+
+    // Azure Firewall
+    deploy_azure_firewall = var.deploy_azure_firewall
+    firewall_subnet_cidr  = try(var.deploy_azure_firewall, false) == true ? var.firewall_subnet_cidr : null
+    gateway_subnet_cidr   = try(var.deploy_azure_firewall, false) == true ? var.gateway_subnet_cidr : null
+
   }
 
 
   integration_module_settings = {
+    deploy_shir                                           = var.deploy_dmlz_shared_integration_runtime
     data_factory_self_hosted_runtime_authorization_script = try(var.data_factory_self_hosted_runtime_authorization_script, null)
     vmss_instance_count                                   = try(var.vmss_instance_count, 2)
     vmss_vm_sku                                           = try(var.vmss_vm_sku, null)
@@ -57,7 +69,6 @@ locals {
 
   consumption_module_settings = {}
   governance_module_settings  = {}
-
 
 
   #########################################

@@ -26,16 +26,19 @@ module "keyvault" {
 
 
 module "private_endpoints" {
-  source              = "../../services/networking/private_endpoint"
-  for_each            = local.private_endpoints
-  tags                = var.global_settings.tags
-  location            = try(each.value.location, var.global_settings.location, null)
-  settings            = each.value
-  name                = "${var.global_settings.name_clean}${each.value.name}"
-  resource_group_name = try(each.value.resource_group_name, var.combined_objects_core.resource_groups[try(each.value.resource_group.key, each.value.resource_group_key)].name)
-  private_dns         = var.combined_objects_core.private_dns_zones
-  resource_id         = each.value.resource_id
-  subnet_id           = try(each.value.subnet_id, var.combined_objects_core.virtual_subnets["private_endpoints"].id)
+  source   = "../../services/networking/private_endpoint"
+  for_each = local.private_endpoints
+
+  location                   = try(each.value.location, var.global_settings.location, null)
+  resource_group_name        = try(each.value.resource_group_name, var.combined_objects_core.resource_groups[try(each.value.resource_group.key, each.value.resource_group_key)].name)
+  resource_id                = each.value.resource_id
+  name                       = "${var.global_settings.name_clean}${each.value.name}"
+  private_service_connection = each.value.private_service_connection
+  subnet_id                  = try(each.value.subnet_id, var.combined_objects_core.virtual_subnets["private_endpoints"].id)
+  private_dns                = each.value.private_dns
+  private_dns_zones          = var.combined_objects_core.private_dns_zones
+  settings                   = each.value
+  tags                       = var.global_settings.tags
 }
 
 

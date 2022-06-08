@@ -12,16 +12,18 @@ tags = {
 ##    Management Zone Feature Flags
 #########################################
 
-deploy_azure_firewall = false
+# Only necessary if there is not an existing connectivity hub network in your environment
+deploy_azure_firewall = true
 
-
-
-
+# True if Data Factory Integration Runtime compute resources should be centrally managed within the Data Management Zone and shared with spoke Data Landing Zones.
+deploy_dmlz_shared_integration_runtime = true
 
 
 #########################################
 ##        Core Network Settings
 #########################################
+
+connectivity_hub_virtual_network_id = "/subscriptions/893395a4-65a3-4525-99ea-2378c6e0dbed/resourceGroups/rg-network_connectivity_hub/providers/Microsoft.Network/virtualNetworks/vnet-connectivity_hub"
 
 vnet_address_cidr = "10.11.0.0/21"
 
@@ -32,10 +34,8 @@ data_gateway_subnet_cidr     = "10.11.2.128/25"
 
 ## if deploy_zure_firewall = true
 firewall_subnet_cidr = "10.11.2.64/26"
-#gateway_subnet_cidr  = "10.11.2.0/26"
+gateway_subnet_cidr  = "10.11.2.0/26"
 
-
-connectivity_hub_virtual_network_id = "/subscriptions/893395a4-65a3-4525-99ea-2378c6e0dbed/resourceGroups/rg-network_connectivity_hub/providers/Microsoft.Network/virtualNetworks/vnet-connectivity_hub"
 
 #########################################
 ##      Private DNS Zone Settings - 

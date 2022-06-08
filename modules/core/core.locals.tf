@@ -85,13 +85,36 @@ locals {
       }
     }
 
+
     specialsubnets = {
-      GatewaySubnet = {
+
+      gw_subnet = {
         name     = "GatewaySubnet"
         cidr     = [var.module_settings.gateway_subnet_cidr]
         vnet_key = "vnet"
       }
+
+      fw_subnet = {
+        name     = "AzureFirewallSubnet" # must be named AzureFirewallSubnet
+        cidr     = [var.module_settings.firewall_subnet_cidr]
+        vnet_key = "vnet"
+      }
     }
+
+
+    firewalls = {
+      fw01 = {
+        name                 = "dmlz-firewall"
+        resource_group_key   = "network"
+        vnet_key             = "vnet"
+        subnet_key           = "AzureFirewallSubnet"
+        sku_name             = "AZFW_VNet"
+        sku_tier             = "Premium"
+        gateway_subnet_cidr  = var.module_settings.gateway_subnet_cidr
+        firewall_subnet_cidr = var.module_settings.firewall_subnet_cidr
+      }
+    }
+
 
     network_security_groups = {
       empty_nsg = {
@@ -103,8 +126,8 @@ locals {
       }
     }
 
-    vnet_peerings = {
 
+    vnet_peerings = {
       dmlz_to_hub = {
         name = "dmz_to_connectivity_hub"
         from = {
@@ -134,6 +157,8 @@ locals {
       }
     }
   }
+
+
   ddi = {
 
     remote_private_dns_zones = {
@@ -179,11 +204,13 @@ locals {
     diagnostic_log_analytics = try(local.diagnostic_log_analytics, {})
   }
 
+
   combined_diagnostics = {
     diagnostics_definition   = try(local.diagnostics_definition, {})
     diagnostics_destinations = try(local.diagnostics_destinations, {})
     log_analytics            = try(module.diagnostic_log_analytics, {})
   }
+
 
   diagnostic_log_analytics = {
     central_logs_region1 = {
@@ -221,6 +248,7 @@ locals {
       }
     }
   }
+
 
   diagnostics_destinations = {
     # Storage keys must reference the azure region name
