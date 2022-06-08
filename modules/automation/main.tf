@@ -58,3 +58,8 @@ output "cosmosdb_accounts" {
 output "cosmosdb_sql_databases" {
   value = azurerm_cosmosdb_sql_database.db
 }
+
+
+output "private_endpoints" {
+  value = module.private_endpoints
+}
