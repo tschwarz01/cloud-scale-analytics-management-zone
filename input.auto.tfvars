@@ -1,3 +1,4 @@
+
 #########################################
 ##          General Settings
 #########################################
@@ -22,10 +23,8 @@ deploy_dmlz_shared_integration_runtime = false
 #########################################
 ##        Core Network Settings
 #########################################
-
 connectivity_hub_virtual_network_id = "/subscriptions/893395a4-65a3-4525-99ea-2378c6e0dbed/resourceGroups/rg-network_connectivity_hub/providers/Microsoft.Network/virtualNetworks/vnet-connectivity_hub"
-
-vnet_address_cidr = "10.11.0.0/21"
+vnet_address_cidr                   = "10.11.0.0/21"
 
 ## Required Subnets
 services_subnet_cidr         = "10.11.0.0/24"
@@ -75,6 +74,7 @@ remote_private_dns_zones = {
   }
 }
 
+
 #######################################
 ##     Private DNS Zones Settings - 
 ## Zones to Create in the Data Management Zone
@@ -94,6 +94,7 @@ local_private_dns_zones = {
   }
 }
 
+
 #########################################
 #     Integration Module Settings
 #########################################
@@ -101,6 +102,7 @@ data_factory_self_hosted_runtime_authorization_script = "https://raw.githubuserc
 vmss_vm_sku                                           = "Standard_D4d_v4"
 vmss_instance_count                                   = 2
 vmss_admin_username                                   = "adminuser"
+
 
 #########################################
 ##         Automation Settings

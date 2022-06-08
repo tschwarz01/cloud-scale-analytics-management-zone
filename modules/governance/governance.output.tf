@@ -3,6 +3,7 @@ output "private_endpoints" {
   value = module.private_endpoints
 }
 
+
 output "purview_accounts" {
   value = {
     id                          = azurerm_purview_account.pva["pva1"].id
@@ -17,3 +18,10 @@ output "purview_accounts" {
     scan_endpoint               = azurerm_purview_account.pva["pva1"].scan_endpoint
   }
 }
+
+
+output "keyvaults" {
+  value = module.keyvault
+}
+
+

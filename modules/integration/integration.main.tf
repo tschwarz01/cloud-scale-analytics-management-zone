@@ -1,3 +1,4 @@
+
 module "keyvault" {
   source   = "../../services/general/keyvault/keyvault"
   for_each = { for key, val in local.keyvaults : key => val if var.module_settings.deploy_shir == true }
