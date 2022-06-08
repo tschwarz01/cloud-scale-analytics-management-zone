@@ -1,6 +1,6 @@
 module "keyvault" {
   source   = "../../services/general/keyvault/keyvault"
-  for_each = local.keyvaults
+  for_each = { for key, val in local.keyvaults : key => val if var.module_settings.deploy_shir == true }
 
   name                  = "${var.global_settings.name}-${each.value.name}"
   global_settings       = var.global_settings
@@ -14,7 +14,7 @@ module "keyvault" {
 
 resource "azurerm_role_assignment" "role_assignment" {
   depends_on = [module.keyvault]
-  for_each   = local.role_assignments
+  for_each   = { for key, val in local.role_assignments : key => val if var.module_settings.deploy_shir == true } #local.role_assignments
 
   scope                = each.value.scope
   role_definition_name = each.value.role_definition_name
@@ -24,7 +24,7 @@ resource "azurerm_role_assignment" "role_assignment" {
 
 module "data_factory" {
   source   = "../../services/general/data_factory/data_factory"
-  for_each = local.data_factory
+  for_each = { for key, val in local.data_factory : key => val if var.module_settings.deploy_shir == true } #local.data_factory
 
   name                  = "${var.global_settings.name}-${each.value.name}"
   global_settings       = var.global_settings
@@ -46,7 +46,7 @@ resource "time_sleep" "shirdelay" {
 module "vmss_self_hosted_integration_runtime" {
   depends_on = [time_sleep.shirdelay]
   source     = "../../services/general/data_factory/vmss_shir"
-  for_each   = try(local.vmss_self_hosted_integration_runtime, {})
+  for_each   = { for key, val in local.vmss_self_hosted_integration_runtime : key => val if var.module_settings.deploy_shir == true } #try(local.vmss_self_hosted_integration_runtime, {})
 
   global_settings        = var.global_settings
   resource_group_name    = var.combined_objects_core.resource_groups[each.value.resource_group_key].name
