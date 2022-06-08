@@ -54,6 +54,7 @@ resource "azurerm_virtual_network" "vnet" {
   location            = each.value.location
   resource_group_name = azurerm_resource_group.rg[each.value.resource_group_key].name
   address_space       = each.value.vnet.address_space
+  dns_servers         = var.module_settings.deploy_azure_firewall == true ? [cidrhost(var.module_settings.firewall_subnet_cidr, 4)] : null
   tags                = var.tags
 }
 
@@ -82,37 +83,39 @@ resource "azurerm_subnet" "snet" {
 
 
 resource "azurerm_subnet" "ssnet" {
-  for_each = local.networking.specialsubnets
+  for_each = { for key, val in local.networking.specialsubnets : key => val if var.module_settings.deploy_azure_firewall == true }
 
   name                 = each.value.name
   resource_group_name  = azurerm_virtual_network.vnet[each.value.vnet_key].resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet[each.value.vnet_key].name
   address_prefixes     = each.value.cidr
-
-  dynamic "delegation" {
-    for_each = try(each.value.delegation, null) == null ? [] : [each.value.delegation]
-
-    content {
-
-      name = delegation.value["name"]
-
-      service_delegation {
-        name    = delegation.value["service_delegation"]
-        actions = lookup(delegation.value, "actions", null)
-      }
-    }
-  }
 }
 
 
 locals {
-  combined_subnet_inputs = merge(try(local.networking.subnets, {}), try(local.networking.specialsubnets, {}))
-  subnets                = merge(try(azurerm_subnet.snet, {}), try(azurerm_subnet.ssnet, {}), {})
+  subnets = merge(try(azurerm_subnet.snet, {}), try(azurerm_subnet.ssnet, {}), {})
+}
+
+
+module "azure_firewall" {
+  for_each = try(var.module_settings.deploy_azure_firewall, false) == true ? try(local.networking.firewalls, {}) : {}
+  source   = "../../services/networking/azfirewall"
+
+  global_settings      = var.global_settings
+  resource_group_name  = azurerm_resource_group.rg[each.value.resource_group_key].name
+  virtual_network_name = azurerm_virtual_network.vnet[each.value.vnet_key].name
+  sku_name             = each.value.sku_name
+  sku_tier             = each.value.sku_tier
+  firewall_subnet_id   = local.subnets["fw_subnet"].id
+  name                 = each.value.name
+  dns_ip_address       = cidrhost(var.module_settings.firewall_subnet_cidr, 4)
+  # gateway_subnet_id    = local.subnets["gw_subnet"].id
+
 }
 
 
 resource "azurerm_subnet_network_security_group_association" "nsg_assoc" {
-  for_each = { for key, value in try(local.combined_subnet_inputs, {}) : key => value if can(value.nsg_key) == true }
+  for_each = { for key, value in try(local.networking.subnets, {}) : key => value if can(value.nsg_key) == true }
 
   subnet_id                 = local.subnets[each.key].id
   network_security_group_id = azurerm_network_security_group.nsg[each.value.nsg_key].id

@@ -50,15 +50,18 @@ resource "azurerm_synapse_private_link_hub" "plh" {
 
 
 module "private_endpoints" {
-  depends_on          = [azurerm_container_registry.acr, azurerm_synapse_private_link_hub.plh]
-  source              = "../../services/networking/private_endpoint"
-  for_each            = local.private_endpoints
-  tags                = var.global_settings.tags
-  location            = try(each.value.location, var.global_settings.location, null)
-  settings            = each.value
-  name                = "${var.global_settings.name_clean}${each.value.name}"
-  resource_group_name = var.combined_objects_core.resource_groups[each.value.resource_group_key].name
-  private_dns         = var.combined_objects_core.private_dns_zones
-  resource_id         = each.value.resource_id
-  subnet_id           = var.combined_objects_core.virtual_subnets[each.value.subnet_key].id
+  depends_on = [azurerm_container_registry.acr, azurerm_synapse_private_link_hub.plh]
+  source     = "../../services/networking/private_endpoint"
+  for_each   = local.private_endpoints
+
+  location                   = try(each.value.location, var.global_settings.location, null)
+  resource_group_name        = var.combined_objects_core.resource_groups[each.value.resource_group_key].name
+  resource_id                = each.value.resource_id
+  name                       = "${var.global_settings.name_clean}${each.value.name}"
+  private_service_connection = each.value.private_service_connection
+  subnet_id                  = var.combined_objects_core.virtual_subnets[each.value.subnet_key].id
+  private_dns                = each.value.private_dns
+  private_dns_zones          = var.combined_objects_core.private_dns_zones
+  settings                   = each.value
+  tags                       = var.global_settings.tags
 }

@@ -41,9 +41,9 @@ locals {
     acr = {
       resource_id        = azurerm_container_registry.acr["acr1"].id
       name               = "dmlz"
+      subnet_key         = "private_endpoints"
       resource_group_key = "consumption"
       location           = var.global_settings.location
-      subnet_key         = "private_endpoints"
       private_service_connection = {
         name                 = "acr0031"
         is_manual_connection = false
