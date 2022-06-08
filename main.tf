@@ -64,3 +64,10 @@ module "integration" {
   tags                  = local.global_settings.tags
 }
 
+module "automation" {
+  source                = "./modules/automation"
+  global_settings       = local.global_settings
+  module_settings       = local.automation_module_settings
+  combined_objects_core = local.combined_objects_core
+  tags                  = local.global_settings.tags
+}

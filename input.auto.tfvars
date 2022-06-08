@@ -16,7 +16,7 @@ tags = {
 deploy_azure_firewall = true
 
 # True if Data Factory Integration Runtime compute resources should be centrally managed within the Data Management Zone and shared with spoke Data Landing Zones.
-deploy_dmlz_shared_integration_runtime = true
+deploy_dmlz_shared_integration_runtime = false
 
 
 #########################################
