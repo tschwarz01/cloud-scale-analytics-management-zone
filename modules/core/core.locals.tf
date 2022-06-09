@@ -165,20 +165,6 @@ locals {
 
   ddi = {
 
-    remote_private_dns_zones = {
-      for vnet, value in var.module_settings.remote_private_dns_zones : vnet => {
-        vnet_key = try(value.vnet_key, null)
-        private_dns_zones = {
-          for zone in value.private_dns_zones : zone => {
-            id                   = "/subscriptions/${value.subscription_id}/resourceGroups/${value.resource_group_name}/providers/Microsoft.Network/privateDnsZones/${zone}"
-            name                 = zone
-            registration_enabled = try(value.registration_enabled, false)
-            is_remote            = true
-          }
-        }
-      } if value.create_vnet_links_to_remote_zones == true
-    }
-
     local_private_dns_zones = {
       for vnet, value in var.module_settings.local_private_dns_zones : vnet => {
         vnet_key           = try(value.vnet_key, null)
@@ -199,9 +185,8 @@ locals {
   local_pdns = {
     for k, v in module.private_dns["vnet"].private_dns_zones : v.name => v.id
   }
-  remote_pdns = {
-    for k, v in local.ddi.remote_private_dns_zones["vnet"].private_dns_zones : v.name => v.id
-  }
+
+  remote_pdns = var.module_settings.remote_private_dns_zones
 
 
   diagnostics = {
