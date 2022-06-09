@@ -1,3 +1,4 @@
+
 resource "random_string" "prefix" {
   count   = try(var.global_settings.prefix, null) == null ? 1 : 0
   length  = 4
@@ -5,7 +6,10 @@ resource "random_string" "prefix" {
   upper   = false
   numeric = false
 }
+
+
 locals {
+
   global_settings = {
     location    = var.location
     prefix      = random_string.prefix[0].result
@@ -13,6 +17,7 @@ locals {
     name        = lower("${random_string.prefix[0].result}-${var.environment}")
     name_clean  = lower("${random_string.prefix[0].result}${var.environment}")
     tags        = merge(local.base_tags, var.tags, {})
+
     client_config = {
       client_id               = data.azurerm_client_config.default.client_id
       tenant_id               = data.azurerm_client_config.default.tenant_id
@@ -22,6 +27,8 @@ locals {
       logged_aad_app_objectId = data.azurerm_client_config.default.object_id == null || data.azurerm_client_config.default.object_id == "" ? data.azuread_client_config.current.object_id : null
     }
   }
+
+
   base_tags = {
     Solution = "CAF Cloud Scale Analytics"
     Project  = "Data Management Landing Zone"
@@ -36,7 +43,8 @@ locals {
   core_module_settings = {
 
     // Connectivity Hub peering
-    connectivity_hub_virtual_network_id = var.connectivity_hub_virtual_network_id
+    create_connectivity_hub_peerings    = var.create_connectivity_hub_peerings
+    connectivity_hub_virtual_network_id = var.create_connectivity_hub_peerings == true ? var.connectivity_hub_virtual_network_id : null
 
     // Management Zone virtual network
     vnet_address_cidr            = var.vnet_address_cidr
@@ -45,10 +53,8 @@ locals {
     data_gateway_subnet_cidr     = var.data_gateway_subnet_cidr
 
     // DNS
-    private_dns_zones_subscription_id     = try(var.private_dns_zones_subscription_id, null)
-    private_dns_zones_resource_group_name = try(var.private_dns_zones_resource_group_name, null)
-    remote_private_dns_zones              = try(var.remote_private_dns_zones, null)
-    local_private_dns_zones               = try(var.local_private_dns_zones, null)
+    remote_private_dns_zones = local.remote_private_dns_zones
+    local_private_dns_zones  = try(var.local_private_dns_zones, null)
 
     // Azure Firewall
     deploy_azure_firewall = var.deploy_azure_firewall
@@ -66,17 +72,26 @@ locals {
     vmss_admin_username                                   = try(var.vmss_admin_username, "adminuser")
   }
 
+
   automation_module_settings = {
     enable_free_tier = var.cosmosdb_use_free_tier
   }
 
+
   consumption_module_settings = {}
-  governance_module_settings  = {}
+
+
+  governance_module_settings = {}
 
 
   #########################################
   ##      Derived Settings / Variables
   #########################################
+
+  remote_private_dns_zones = {
+    for zone in var.dns_zones_remote_zones : zone =>
+    "/subscriptions/${var.dns_zones_remote_subscription_id}/resourceGroups/${var.dns_zones_remote_resource_group}/providers/Microsoft.Network/privateDnsZones/${zone}"
+  }
 
   combined_objects_core = {
     resource_groups   = merge(module.core.resource_groups, {})

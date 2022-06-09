@@ -29,6 +29,11 @@ output "remote_pdns" {
 }
 
 
+output "private_dns_zones" {
+  value = merge(local.local_pdns, local.remote_pdns)
+}
+
+
 output "diagnostics" {
   value = local.combined_diagnostics
 }

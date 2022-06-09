@@ -5,6 +5,16 @@ terraform {
       version = "3.7.0"
     }
   }
+
+  backend "azurerm" {
+    subscription_id      = "47f7e6d7-0e52-4394-92cb-5f106bbc647f"
+    tenant_id            = "72f988bf-86f1-41af-91ab-2d7cd011db47"
+    resource_group_name  = "rg-data-management-zone-terraform"
+    storage_account_name = "stgcafcsaterraformstate"
+    container_name       = "caf-csa-management-zone"
+    key                  = "dmlz.terraform.tfstate"
+  }
+
   required_version = ">= 0.15"
   experiments      = [module_variable_optional_attrs]
 }
@@ -71,4 +81,8 @@ module "automation" {
   module_settings       = local.automation_module_settings
   combined_objects_core = local.combined_objects_core
   tags                  = local.global_settings.tags
+}
+
+output "cpdns" {
+  value = module.core.private_dns_zones
 }

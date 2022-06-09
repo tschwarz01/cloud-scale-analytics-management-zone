@@ -134,19 +134,38 @@ module "private_dns" {
 }
 
 
-module "remote_vnet_links" {
-  for_each = local.ddi.remote_private_dns_zones
-  source   = "../../services/networking/private_dns"
+# module "remote_vnet_links" {
+#   for_each = local.ddi.remote_private_dns_zones
+#   source   = "../../services/networking/private_dns"
 
-  global_settings    = var.global_settings
-  virtual_network_id = try(azurerm_virtual_network.vnet[try(each.key, each.value.vnet_key)].id, null)
-  private_dns_zones  = each.value.private_dns_zones
-  tags               = var.tags
+#   global_settings    = var.global_settings
+#   virtual_network_id = try(azurerm_virtual_network.vnet[try(each.key, each.value.vnet_key)].id, null)
+#   private_dns_zones  = each.value.private_dns_zones
+#   tags               = var.tags
+# }
+
+
+resource "azapi_resource" "remote_vnet_links" {
+  for_each  = try(var.module_settings.remote_private_dns_zones, {})
+  type      = "Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01"
+  location  = "global"
+  name      = "${var.global_settings.name}-${each.key}"
+  parent_id = each.value
+
+  body = jsonencode({
+    properties = {
+      registrationEnabled = false
+      virtualNetwork = {
+        id = azurerm_virtual_network.vnet["vnet"].id
+      }
+    }
+  })
+  tags = try(var.tags, {})
 }
 
 
 resource "azapi_resource" "virtualNetworkPeerings" {
-  for_each = local.networking.vnet_peerings
+  for_each = { for key, value in local.networking.vnet_peerings : key => value if var.module_settings.create_connectivity_hub_peerings == true }
 
   type      = "Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-05-01"
   name      = "${var.global_settings.name}-${each.value.name}"
