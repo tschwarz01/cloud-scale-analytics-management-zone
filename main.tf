@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.7.0"
+      version = "3.10.0"
     }
   }
 
@@ -83,6 +83,6 @@ module "automation" {
   tags                  = local.global_settings.tags
 }
 
-output "cpdns" {
-  value = module.core.private_dns_zones
+output "global_settings" {
+  value = local.global_settings
 }

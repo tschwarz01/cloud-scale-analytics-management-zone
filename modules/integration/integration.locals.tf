@@ -45,7 +45,7 @@ locals {
     kvint = {
       scope                = try(module.keyvault["integration"].id, null)
       role_definition_name = "Key Vault Secrets Officer"
-      principal_id         = "42069eb9-858a-47c5-9d51-9e1f9882dc8b" #var.global_settings.client_config.object_id
+      principal_id         = var.global_settings.client_config.object_id
     }
   }
 
