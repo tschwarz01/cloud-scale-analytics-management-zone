@@ -82,7 +82,3 @@ module "automation" {
   combined_objects_core = local.combined_objects_core
   tags                  = local.global_settings.tags
 }
-
-output "global_settings" {
-  value = local.global_settings
-}
