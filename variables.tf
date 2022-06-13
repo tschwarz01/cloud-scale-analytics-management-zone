@@ -103,14 +103,6 @@ variable "dns_zones_remote_zones" {
 variable "local_private_dns_zones" {
   description = "List of Private DNS Zone names to be created in the Data Management Zone subscription"
   default     = {}
-
-  type = map(object({
-    create_local_private_dns_zones = bool
-    vnet_key                       = string
-    resource_group_name            = optional(string)
-    resource_group_key             = optional(string)
-    private_dns_zones              = list(string)
-  }))
 }
 
 variable "data_factory_self_hosted_runtime_authorization_script" {
