@@ -1,4 +1,4 @@
-name: 'Terraform'
+name: 'tf-az-workflow'
 
 on: [push, pull_request]
 
