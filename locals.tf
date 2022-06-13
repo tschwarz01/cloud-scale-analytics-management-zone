@@ -19,10 +19,11 @@ locals {
     tags        = merge(local.base_tags, var.tags, {})
 
     client_config = {
-      client_id               = data.azurerm_client_config.default.client_id
-      tenant_id               = data.azurerm_client_config.default.tenant_id
-      subscription_id         = data.azurerm_subscription.current.id
-      object_id               = data.azurerm_client_config.default.object_id == null || data.azurerm_client_config.default.object_id == "" ? data.azuread_client_config.current.object_id : null
+      client_id       = data.azurerm_client_config.default.client_id
+      tenant_id       = data.azurerm_client_config.default.tenant_id
+      subscription_id = data.azurerm_subscription.current.id
+      #object_id               = data.azurerm_client_config.default.object_id == null || data.azurerm_client_config.default.object_id == "" ? data.azuread_client_config.current.object_id : null
+      object_id               = data.azurerm_client_config.default.object_id
       logged_user_objectId    = data.azurerm_client_config.default.object_id == null || data.azurerm_client_config.default.object_id == "" ? data.azuread_client_config.current.object_id : null
       logged_aad_app_objectId = data.azurerm_client_config.default.object_id == null || data.azurerm_client_config.default.object_id == "" ? data.azuread_client_config.current.object_id : null
     }
