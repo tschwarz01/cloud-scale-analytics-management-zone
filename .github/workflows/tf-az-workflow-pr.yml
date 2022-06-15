@@ -1,9 +1,7 @@
 name: "tf-az-workflow-pr"
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
 
 env:
   TF_LOG: INFO
