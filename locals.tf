@@ -24,8 +24,8 @@ locals {
       subscription_id = data.azurerm_subscription.current.id
       #object_id               = data.azurerm_client_config.default.object_id == null || data.azurerm_client_config.default.object_id == "" ? data.azuread_client_config.current.object_id : null
       object_id               = data.azurerm_client_config.default.object_id
-      logged_user_objectId    = data.azurerm_client_config.default.object_id == null || data.azurerm_client_config.default.object_id == "" ? data.azuread_client_config.current.object_id : null
-      logged_aad_app_objectId = data.azurerm_client_config.default.object_id == null || data.azurerm_client_config.default.object_id == "" ? data.azuread_client_config.current.object_id : null
+      logged_user_objectId    = data.azurerm_client_config.default.object_id
+      logged_aad_app_objectId = data.azurerm_client_config.default.object_id
     }
   }
 
