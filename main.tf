@@ -6,14 +6,14 @@ terraform {
     }
   }
 
-  backend "azurerm" {
-    subscription_id      = "47f7e6d7-0e52-4394-92cb-5f106bbc647f"
-    tenant_id            = "72f988bf-86f1-41af-91ab-2d7cd011db47"
-    resource_group_name  = "rg-data-management-zone-terraform"
-    storage_account_name = "stgcafcsaterraformstate"
-    container_name       = "caf-csa-management-zone"
-    key                  = "dmlz.terraform.tfstate"
-  }
+  # backend "azurerm" {
+  #   subscription_id      = "47f7e6d7-0e52-4394-92cb-5f106bbc647f"
+  #   tenant_id            = "72f988bf-86f1-41af-91ab-2d7cd011db47"
+  #   resource_group_name  = "rg-data-management-zone-terraform"
+  #   storage_account_name = "stgcafcsaterraformstate"
+  #   container_name       = "caf-csa-management-zone"
+  #   key                  = "dmlz.terraform.tfstate"
+  # }
 
   required_version = ">= 0.15"
 }
