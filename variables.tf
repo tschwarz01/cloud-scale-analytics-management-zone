@@ -119,8 +119,8 @@ variable "vmss_vm_sku" {
 
 variable "vmss_instance_count" {
   type        = number
+  default     = 2
   description = "The number of instances to be used in the VMSS (1 - 4)."
-  default = 2
 }
 
 variable "vmss_admin_username" {
