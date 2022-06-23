@@ -5,7 +5,7 @@ output "data_factory_id" {
   value = azurerm_data_factory_integration_runtime_self_hosted.shir.data_factory_id
 }
 output "description" {
-  value = try(azurerm_data_factory_integration_runtime_self_hosted.shir.description, null)
+  value = azurerm_data_factory_integration_runtime_self_hosted.shir.description
 }
 output "name" {
   value = azurerm_data_factory_integration_runtime_self_hosted.shir.name

@@ -7,7 +7,7 @@ module "keyvault" {
   global_settings       = var.global_settings
   settings              = each.value
   location              = var.global_settings.location
-  resource_group_name   = can(each.value.resource_group.name) || can(each.value.resource_group_name) ? try(each.value.resource_group.name, each.value.resource_group_name) : var.combined_objects_core.resource_groups[try(each.value.resource_group_key, each.value.resource_group.key)].name
+  resource_group_name   = var.combined_objects_core.resource_groups[each.value.resource_group_key].name
   tags                  = var.tags
   combined_objects_core = var.combined_objects_core
 }
@@ -31,7 +31,7 @@ module "data_factory" {
   global_settings       = var.global_settings
   settings              = each.value
   location              = var.global_settings.location
-  resource_group_name   = can(each.value.resource_group.name) || can(each.value.resource_group_name) ? try(each.value.resource_group.name, each.value.resource_group_name) : var.combined_objects_core.resource_groups[try(each.value.resource_group_key, each.value.resource_group.key)].name
+  resource_group_name   = var.combined_objects_core.resource_groups[each.value.resource_group_key].name
   tags                  = var.tags
   combined_objects_core = var.combined_objects_core
 }
@@ -47,7 +47,7 @@ resource "time_sleep" "shirdelay" {
 module "vmss_self_hosted_integration_runtime" {
   depends_on = [time_sleep.shirdelay]
   source     = "../../services/general/data_factory/vmss_shir"
-  for_each   = { for key, val in local.vmss_self_hosted_integration_runtime : key => val if var.module_settings.deploy_shir == true } #try(local.vmss_self_hosted_integration_runtime, {})
+  for_each   = { for key, val in local.vmss_self_hosted_integration_runtime : key => val if var.module_settings.deploy_shir == true }
 
   global_settings        = var.global_settings
   resource_group_name    = var.combined_objects_core.resource_groups[each.value.resource_group_key].name

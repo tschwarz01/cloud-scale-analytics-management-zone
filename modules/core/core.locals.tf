@@ -167,12 +167,14 @@ locals {
 
     local_private_dns_zones = {
       for vnet, value in var.module_settings.local_private_dns_zones : vnet => {
-        vnet_key           = try(value.vnet_key, null)
+
+        vnet_key           = lookup(value, "vnet_key", null)
         resource_group_key = value.resource_group_key
         private_dns_zones = {
+
           for zone in value.private_dns_zones : zone => {
-            #id   = "/subscriptions/${value.subscription_id}/resourceGroups/${value.resource_group_name}/providers/Microsoft.Network/privateDnsZones/${zone}"
-            registration_enabled = try(value.registration_enabled, false)
+
+            registration_enabled = lookup(value, "registration_enabled", false)
             name                 = zone
             is_remote            = false
           }
@@ -190,14 +192,14 @@ locals {
 
 
   diagnostics = {
-    diagnostic_log_analytics = try(local.diagnostic_log_analytics, {})
+    diagnostic_log_analytics = local.diagnostic_log_analytics
   }
 
 
   combined_diagnostics = {
-    diagnostics_definition   = try(local.diagnostics_definition, {})
-    diagnostics_destinations = try(local.diagnostics_destinations, {})
-    log_analytics            = try(module.diagnostic_log_analytics, {})
+    diagnostics_definition   = local.diagnostics_definition
+    diagnostics_destinations = local.diagnostics_destinations
+    log_analytics            = module.diagnostic_log_analytics
   }
 
 

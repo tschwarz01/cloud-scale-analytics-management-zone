@@ -1,6 +1,7 @@
 
 resource "random_string" "prefix" {
-  count   = try(var.global_settings.prefix, null) == null ? 1 : 0
+
+  count   = lookup(var.global_settings, "prefix", null) == null ? 1 : 0
   length  = 4
   special = false
   upper   = false
@@ -55,22 +56,22 @@ locals {
 
     // DNS
     remote_private_dns_zones = local.remote_private_dns_zones
-    local_private_dns_zones  = try(var.local_private_dns_zones, null)
+    local_private_dns_zones  = var.local_private_dns_zones
 
     // Azure Firewall
     deploy_azure_firewall = var.deploy_azure_firewall
-    firewall_subnet_cidr  = try(var.deploy_azure_firewall, false) == true ? var.firewall_subnet_cidr : null
-    gateway_subnet_cidr   = try(var.deploy_azure_firewall, false) == true ? var.gateway_subnet_cidr : null
+    firewall_subnet_cidr  = var.deploy_azure_firewall == true ? var.firewall_subnet_cidr : null
+    gateway_subnet_cidr   = var.deploy_azure_firewall == true ? var.gateway_subnet_cidr : null
 
   }
 
 
   integration_module_settings = {
     deploy_shir                                           = var.deploy_dmlz_shared_integration_runtime
-    data_factory_self_hosted_runtime_authorization_script = try(var.data_factory_self_hosted_runtime_authorization_script, null)
-    vmss_instance_count                                   = try(var.vmss_instance_count, 2)
-    vmss_vm_sku                                           = try(var.vmss_vm_sku, null)
-    vmss_admin_username                                   = try(var.vmss_admin_username, "adminuser")
+    data_factory_self_hosted_runtime_authorization_script = var.data_factory_self_hosted_runtime_authorization_script
+    vmss_instance_count                                   = var.vmss_instance_count
+    vmss_vm_sku                                           = var.vmss_vm_sku
+    vmss_admin_username                                   = var.vmss_admin_username
   }
 
 
