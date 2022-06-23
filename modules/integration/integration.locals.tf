@@ -43,7 +43,7 @@ locals {
 
   role_assignments = {
     kvint = {
-      scope                = try(module.keyvault["integration"].id, null)
+      scope                = module.keyvault["integration"].id
       role_definition_name = "Key Vault Secrets Officer"
       principal_id         = var.global_settings.client_config.object_id
     }
@@ -52,8 +52,8 @@ locals {
 
   data_factory = {
     df1 = {
-      name                            = "adf-integration21tws"
-      resource_group_name             = var.combined_objects_core.resource_groups["integration"].name
+      name                            = "dmlz-int"
+      resource_group_key              = "integration"
       managed_virtual_network_enabled = true
       enable_system_msi               = true
 
@@ -130,7 +130,7 @@ locals {
       vmss_settings = {
         windows = {
           provision_vm_agent = true
-          admin_username     = try(var.module_settings.vmss_admin_username, "adminuser")
+          admin_username     = lookup(var.module_settings, "vmss_admin_username", "adminuser")
           name               = "shir"
           sku                = "Standard_D4d_v4"
           priority           = "Spot"

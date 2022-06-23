@@ -2,8 +2,8 @@ module "private_endpoint" {
   source   = "../../../networking/private_endpoint"
   for_each = var.settings.private_endpoints
 
-  location                   = try(each.value.location, var.global_settings.location, null)
-  resource_group_name        = try(each.value.resource_group_name, var.combined_objects_core.resource_groups[try(each.value.resource_group.key, each.value.resource_group_key)].name)
+  location                   = coalesce(lookup(each.value, "location", var.global_settings.location))
+  resource_group_name        = coalesce(lookup(each.value, "resource_group_name", var.combined_objects_core.resource_groups[each.value.resource_group_key].name))
   resource_id                = azurerm_key_vault.kv.id
   name                       = "${var.global_settings.name_clean}${each.value.name}"
   private_service_connection = each.value.private_service_connection

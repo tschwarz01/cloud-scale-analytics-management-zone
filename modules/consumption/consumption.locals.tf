@@ -16,6 +16,7 @@ locals {
       sku                           = "Premium"
       quarantine_policy_enabled     = true
       public_network_access_enabled = false
+      admin_enabled                 = false
       retention_policy = {
         days    = 7
         enabled = true

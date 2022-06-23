@@ -13,7 +13,7 @@ resource "azurerm_resource_group" "rg" {
 
   name     = "${var.global_settings.name}-${each.value.name}"
   location = each.value.location
-  tags     = try(var.tags, {})
+  tags     = var.tags
 }
 
 
@@ -26,22 +26,22 @@ resource "azurerm_network_security_group" "nsg" {
   tags                = var.tags
 
   dynamic "security_rule" {
-    for_each = try(each.value.nsg, [])
+    for_each = lookup(each.value, "nsg", [])
 
     content {
-      name                         = try(security_rule.value.name, null)
-      priority                     = try(security_rule.value.priority, null)
-      direction                    = try(security_rule.value.direction, null)
-      access                       = try(security_rule.value.access, null)
-      protocol                     = try(security_rule.value.protocol, null)
-      source_port_range            = try(security_rule.value.source_port_range, null)
-      source_port_ranges           = try(security_rule.value.source_port_ranges, null)
-      destination_port_range       = try(security_rule.value.destination_port_range, null)
-      destination_port_ranges      = try(security_rule.value.destination_port_ranges, null)
-      source_address_prefix        = try(security_rule.value.source_address_prefix, null)
-      source_address_prefixes      = try(security_rule.value.source_address_prefixes, null)
-      destination_address_prefix   = try(security_rule.value.destination_address_prefix, null)
-      destination_address_prefixes = try(security_rule.value.destination_address_prefixes, null)
+      name                         = lookup(security_rule, "name", null)
+      priority                     = lookup(security_rule, "priority", null)
+      direction                    = lookup(security_rule, "direction", null)
+      access                       = lookup(security_rule, "access", null)
+      protocol                     = lookup(security_rule, "protocol", null)
+      source_port_range            = lookup(security_rule, "source_port_range", null)
+      source_port_ranges           = lookup(security_rule, "source_port_ranges", null)
+      destination_port_range       = lookup(security_rule, "destination_port_range", null)
+      destination_port_ranges      = lookup(security_rule, "destination_port_ranges", null)
+      source_address_prefix        = lookup(security_rule, "source_address_prefix", null)
+      source_address_prefixes      = lookup(security_rule, "source_address_prefixes", null)
+      destination_address_prefix   = lookup(security_rule, "destination_address_prefix", null)
+      destination_address_prefixes = lookup(security_rule, "destination_address_prefixes", null)
     }
   }
 }
@@ -68,7 +68,7 @@ resource "azurerm_subnet" "snet" {
   address_prefixes     = each.value.cidr
 
   dynamic "delegation" {
-    for_each = try(each.value.delegation, null) == null ? [] : [each.value.delegation]
+    for_each = lookup(each.value, "delegation", null) == null ? [] : [each.value.delegation]
 
     content {
       name = delegation.value["name"]
@@ -93,12 +93,12 @@ resource "azurerm_subnet" "ssnet" {
 
 
 locals {
-  subnets = merge(try(azurerm_subnet.snet, {}), try(azurerm_subnet.ssnet, {}), {})
+  subnets = merge(azurerm_subnet.snet, azurerm_subnet.ssnet, {})
 }
 
 
 module "azure_firewall" {
-  for_each = try(var.module_settings.deploy_azure_firewall, false) == true ? try(local.networking.firewalls, {}) : {}
+  for_each = lookup(var.module_settings, "deploy_azure_firewall", false) == true ? lookup(local.networking, "firewalls", {}) : {}
   source   = "../../services/networking/azfirewall"
 
   global_settings      = var.global_settings
@@ -115,7 +115,7 @@ module "azure_firewall" {
 
 
 resource "azurerm_subnet_network_security_group_association" "nsg_assoc" {
-  for_each = { for key, value in try(local.networking.subnets, {}) : key => value if can(value.nsg_key) == true }
+  for_each = { for key, value in local.networking.subnets : key => value if can(value.nsg_key) == true }
 
   subnet_id                 = local.subnets[each.key].id
   network_security_group_id = azurerm_network_security_group.nsg[each.value.nsg_key].id
@@ -128,25 +128,14 @@ module "private_dns" {
 
   resource_group_name = azurerm_resource_group.rg[each.value.resource_group_key].name
   global_settings     = var.global_settings
-  virtual_network_id  = try(azurerm_virtual_network.vnet[try(each.key, each.value.vnet_key)].id, null)
+  virtual_network_id  = azurerm_virtual_network.vnet[coalesce(each.key, each.value.vnet_key)].id
   private_dns_zones   = each.value.private_dns_zones
   tags                = var.tags
 }
 
 
-# module "remote_vnet_links" {
-#   for_each = local.ddi.remote_private_dns_zones
-#   source   = "../../services/networking/private_dns"
-
-#   global_settings    = var.global_settings
-#   virtual_network_id = try(azurerm_virtual_network.vnet[try(each.key, each.value.vnet_key)].id, null)
-#   private_dns_zones  = each.value.private_dns_zones
-#   tags               = var.tags
-# }
-
-
 resource "azapi_resource" "remote_vnet_links" {
-  for_each  = try(var.module_settings.remote_private_dns_zones, {})
+  for_each  = lookup(var.module_settings, "remote_private_dns_zones", {})
   type      = "Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01"
   location  = "global"
   name      = "${var.global_settings.name}-${each.key}"
@@ -160,7 +149,7 @@ resource "azapi_resource" "remote_vnet_links" {
       }
     }
   })
-  tags = try(var.tags, {})
+  tags = var.tags
 }
 
 
@@ -173,11 +162,11 @@ resource "azapi_resource" "virtualNetworkPeerings" {
 
   body = jsonencode({
     properties = {
-      allowForwardedTraffic     = try(each.value.allow_forwarded_traffic, false)
-      allowGatewayTransit       = try(each.value.allow_gateway_transit, false)
-      allowVirtualNetworkAccess = try(each.value.allow_virtual_network_access, true)
-      doNotVerifyRemoteGateways = try(each.value.do_not_verify_remote_gateways, false)
-      useRemoteGateways         = try(each.value.use_remote_gateways, false)
+      allowForwardedTraffic     = lookup(each.value, "allow_forwarded_traffic", false)
+      allowGatewayTransit       = lookup(each.value, "allow_gateway_transit", false)
+      allowVirtualNetworkAccess = lookup(each.value, "allow_virtual_network_access", true)
+      doNotVerifyRemoteGateways = lookup(each.value, "do_not_verify_remote_gateways", false)
+      useRemoteGateways         = lookup(each.value, "use_remote_gateways", false)
       remoteVirtualNetwork = {
         id = can(each.value.to.remote_virtual_network_id) ? each.value.to.remote_virtual_network_id : azurerm_virtual_network.vnet[each.value.to.vnet_key].id
       }
@@ -193,8 +182,8 @@ module "diagnostic_log_analytics" {
   global_settings     = var.global_settings
   log_analytics       = each.value
   location            = var.global_settings.location
-  resource_group_name = can(each.value.resource_group.name) || can(each.value.resource_group_name) ? try(each.value.resource_group.name, each.value.resource_group_name) : azurerm_resource_group.rg[try(each.value.resource_group_key, each.value.resource_group.key)].name
-  tags                = try(var.tags, {})
+  resource_group_name = azurerm_resource_group.rg[each.value.resource_group_key].name
+  tags                = var.tags
 }
 
 
@@ -205,7 +194,7 @@ module "diagnostic_log_analytics_diagnostics" {
   resource_id       = module.diagnostic_log_analytics[each.key].id
   resource_location = module.diagnostic_log_analytics[each.key].location
   diagnostics       = local.combined_diagnostics
-  profiles          = try(each.value.diagnostic_profiles, {})
+  profiles          = lookup(each.value, "diagnostic_profiles", {})
 }
 
 

@@ -10,7 +10,7 @@ resource "azurerm_cosmosdb_account" "acct" {
   kind                          = "GlobalDocumentDB"
   public_network_access_enabled = false
   enable_automatic_failover     = each.value.enable_automatic_failover
-  tags                          = try(var.tags, {})
+  tags                          = var.tags
 
   consistency_policy {
     consistency_level = "Session"
@@ -36,7 +36,7 @@ module "private_endpoints" {
   source   = "../../services/networking/private_endpoint"
   for_each = local.private_endpoints
 
-  location                   = try(each.value.location, var.global_settings.location, null)
+  location                   = coalesce(each.value.location, var.global_settings.location)
   resource_group_name        = var.combined_objects_core.resource_groups[each.value.resource_group_key].name
   resource_id                = each.value.resource_id
   name                       = "${var.global_settings.name_clean}${each.value.name}"

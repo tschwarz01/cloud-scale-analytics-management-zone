@@ -4,7 +4,7 @@ resource "azurerm_shared_image_gallery" "sig" {
   name                = "${var.global_settings.name_clean}${each.value.name}"
   resource_group_name = var.combined_objects_core.resource_groups[each.value.resource_group_key].name
   location            = each.value.location
-  description         = try(each.value.description, null)
+  description         = lookup(each.value, "description", null)
   tags                = var.tags
 }
 
@@ -15,14 +15,14 @@ resource "azurerm_container_registry" "acr" {
   resource_group_name           = var.combined_objects_core.resource_groups[each.value.resource_group_key].name
   location                      = each.value.location
   sku                           = "Premium"
-  admin_enabled                 = try(each.value.admin_enabled, false)
-  quarantine_policy_enabled     = try(each.value.quarantine_policy_enabled, false)
-  public_network_access_enabled = try(each.value.public_network_access_enabled, true)
+  admin_enabled                 = lookup(each.value, "admin_enabled", false)
+  quarantine_policy_enabled     = lookup(each.value, "quarantine_policy_enabled", false)
+  public_network_access_enabled = lookup(each.value, "public_network_access_enabled", false)
   identity {
     type = "SystemAssigned"
   }
   dynamic "retention_policy" {
-    for_each = try(each.value.retention_policy, null) == null ? [] : [each.value.retention_policy]
+    for_each = lookup(each.value, "retention_policy", null) == null ? [] : [each.value.retention_policy]
     content {
       days    = lookup(retention_policy.value, "days", null)
       enabled = lookup(retention_policy.value, "enabled", true)
@@ -54,7 +54,7 @@ module "private_endpoints" {
   source     = "../../services/networking/private_endpoint"
   for_each   = local.private_endpoints
 
-  location                   = try(each.value.location, var.global_settings.location, null)
+  location                   = coalesce(each.value.location, var.global_settings.location)
   resource_group_name        = var.combined_objects_core.resource_groups[each.value.resource_group_key].name
   resource_id                = each.value.resource_id
   name                       = "${var.global_settings.name_clean}${each.value.name}"

@@ -4,7 +4,7 @@ locals {
     pva1 = {
       name                        = "pva1"
       location                    = var.global_settings.location
-      resource_group_name         = var.combined_objects_core.resource_groups["governance"].name
+      resource_group_key          = "governance"
       public_network_enabled      = false
       managed_resource_group_name = "managed-purview"
     }
@@ -12,11 +12,11 @@ locals {
 
   private_endpoints = {
     account = {
-      resource_id         = azurerm_purview_account.pva["pva1"].id
-      name                = "account"
-      resource_group_name = var.combined_objects_core.resource_groups["governance"].name
-      location            = var.global_settings.location
-      subnet_id           = var.combined_objects_core.virtual_subnets["private_endpoints"].id
+      resource_id        = azurerm_purview_account.pva["pva1"].id
+      name               = "account"
+      resource_group_key = "governance"
+      location           = var.global_settings.location
+      subnet_id          = var.combined_objects_core.virtual_subnets["private_endpoints"].id
 
       private_service_connection = {
         name                 = "account"
@@ -31,11 +31,11 @@ locals {
     }
 
     portal = {
-      resource_id         = azurerm_purview_account.pva["pva1"].id
-      name                = "portal"
-      resource_group_name = var.combined_objects_core.resource_groups["governance"].name
-      location            = var.global_settings.location
-      subnet_id           = var.combined_objects_core.virtual_subnets["private_endpoints"].id
+      resource_id        = azurerm_purview_account.pva["pva1"].id
+      name               = "portal"
+      resource_group_key = "governance"
+      location           = var.global_settings.location
+      subnet_id          = var.combined_objects_core.virtual_subnets["private_endpoints"].id
 
       private_service_connection = {
         name                 = "portal"
@@ -50,11 +50,11 @@ locals {
     }
 
     blob = {
-      resource_id         = azurerm_purview_account.pva["pva1"].managed_resources[0].storage_account_id
-      name                = "blob"
-      resource_group_name = var.combined_objects_core.resource_groups["governance"].name
-      location            = var.global_settings.location
-      subnet_id           = var.combined_objects_core.virtual_subnets["private_endpoints"].id
+      resource_id        = azurerm_purview_account.pva["pva1"].managed_resources[0].storage_account_id
+      name               = "blob"
+      resource_group_key = "governance"
+      location           = var.global_settings.location
+      subnet_id          = var.combined_objects_core.virtual_subnets["private_endpoints"].id
 
       private_service_connection = {
         name                 = "blob"
@@ -69,11 +69,11 @@ locals {
     }
 
     queue = {
-      resource_id         = azurerm_purview_account.pva["pva1"].managed_resources[0].storage_account_id
-      name                = "queue"
-      resource_group_name = var.combined_objects_core.resource_groups["governance"].name
-      location            = var.global_settings.location
-      subnet_id           = var.combined_objects_core.virtual_subnets["private_endpoints"].id
+      resource_id        = azurerm_purview_account.pva["pva1"].managed_resources[0].storage_account_id
+      name               = "queue"
+      resource_group_key = "governance"
+      location           = var.global_settings.location
+      subnet_id          = var.combined_objects_core.virtual_subnets["private_endpoints"].id
 
       private_service_connection = {
         name                 = "queue"
@@ -88,11 +88,11 @@ locals {
     }
 
     eventhub = {
-      resource_id         = azurerm_purview_account.pva["pva1"].managed_resources[0].event_hub_namespace_id
-      name                = "eventhub"
-      resource_group_name = var.combined_objects_core.resource_groups["governance"].name
-      location            = var.global_settings.location
-      subnet_id           = var.combined_objects_core.virtual_subnets["private_endpoints"].id
+      resource_id        = azurerm_purview_account.pva["pva1"].managed_resources[0].event_hub_namespace_id
+      name               = "eventhub"
+      resource_group_key = "governance"
+      location           = var.global_settings.location
+      subnet_id          = var.combined_objects_core.virtual_subnets["private_endpoints"].id
 
       private_service_connection = {
         name                 = "eventhub"

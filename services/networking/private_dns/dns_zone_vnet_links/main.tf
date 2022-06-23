@@ -15,12 +15,12 @@ resource "azapi_resource" "virtualNetworkLinks" {
 
   body = jsonencode({
     properties = {
-      registrationEnabled = try(var.registration_enabled, false)
+      registrationEnabled = coalesce(var.registration_enabled, false)
       virtualNetwork = {
         id = var.virtual_network_id
       }
     }
   })
 
-  tags = try(var.tags, {})
+  tags = var.tags
 }

@@ -6,7 +6,7 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostics" {
 
   name                           = try(format("%s%s", try("${var.global_settings.name}-", ""), each.value.name), format("%s%s", try("${var.global_settings.name}-", ""), var.diagnostics.diagnostics_definition[each.value.definition_key].name))
   target_resource_id             = var.resource_id
-  log_analytics_workspace_id     = each.value.destination_type == "log_analytics" ? try(var.diagnostics.diagnostics_destinations.log_analytics[each.value.destination_key].log_analytics_resource_id, var.diagnostics.log_analytics[var.diagnostics.diagnostics_destinations.log_analytics[each.value.destination_key].log_analytics_key].id) : null
+  log_analytics_workspace_id     = each.value.destination_type == "log_analytics" ? var.diagnostics.log_analytics[var.diagnostics.diagnostics_destinations.log_analytics[each.value.destination_key].log_analytics_key].id : null
   log_analytics_destination_type = each.value.destination_type == "log_analytics" ? lookup(local.diagnostics_definition[each.value.definition_key], "log_analytics_destination_type", null) : null
 
   dynamic "log" {

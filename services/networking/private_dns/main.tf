@@ -1,5 +1,5 @@
 module "zones" {
-  for_each = { for key, value in var.private_dns_zones : key => value if try(value.is_remote, false) != true }
+  for_each = { for key, value in var.private_dns_zones : key => value if lookup(value, "is_remote", false) != true }
   source   = "./private_dns_zones"
 
   global_settings     = var.global_settings
@@ -13,9 +13,9 @@ module "dns_zone_vnet_links" {
   source   = "./dns_zone_vnet_links"
 
   global_settings       = var.global_settings
-  private_dns_zone_name = try(module.zones[each.value.name].name, each.value.name)
-  private_dns_zone_id   = try(module.zones[each.value.name].id, each.value.id)
+  private_dns_zone_name = module.zones[each.value.name].name #coalesce(module.zones[each.value.name].name, each.value.name)
+  private_dns_zone_id   = module.zones[each.value.name].id   #coalesce(module.zones[each.value.name].id, each.value.id)
   virtual_network_id    = var.virtual_network_id
-  registration_enabled  = try(each.value.registration_enabled, false)
+  registration_enabled  = lookup(each.value, "registration_enabled", false)
   tags                  = var.tags
 }

@@ -9,5 +9,5 @@ resource "azurerm_log_analytics_workspace" "law" {
   reservation_capacity_in_gb_per_day = lookup(var.log_analytics, "reservation_capcity_in_gb_per_day", null)
   sku                                = lookup(var.log_analytics, "sku", "PerGB2018")
   retention_in_days                  = lookup(var.log_analytics, "retention_in_days", 30)
-  tags                               = try(var.tags, {})
+  tags                               = var.tags
 }
